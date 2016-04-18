@@ -35,42 +35,25 @@ public class transposition {
 	}
 	
 	
-	private void printCipherToFile(String outputFileName)
+	private String generateChiperText()
 	{
-		FileWriter outputFile;
-		try
-		{
-			outputFile = new FileWriter(outputFileName);
-			BufferedReader bufferReader;
-			
-			try
-			{
+		
+		StringBuilder textHolder = new StringBuilder();
+		
 				for(Entry<Character, ArrayList<Character>> entry : map.entrySet()) 
 				{
-					  char currentKey = entry.getKey();
+					  
 					  
 					  for(int i=0; i<entry.getValue().size();i++)
 					  {
-						  outputFile.append(entry.getValue().get(i));
+						  
+						  textHolder.append(entry.getValue().get(i));
+						  
 					  }
-					  outputFile.append(' ');
+					  textHolder.append(' ');
 				}
 				
-				outputFile.close();
-			}
-			catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		}
-		
-		
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		return textHolder.toString();
 	}
 	
 	
@@ -105,7 +88,8 @@ public class transposition {
 		originalText = FileIO.readFile(inputFileName);
 		addPadding();
 		putToMapEn();
-		printCipherToFile(outputFileName);
+		FileIO.printCipherToFile(outputFileName, generateChiperText());
+		//printCipherToFile(outputFileName);
 	}
 	
 	private void convertOutputToString()
@@ -121,15 +105,10 @@ public class transposition {
 	}
 	
 	
-	private void printPlainToFile(String outputFileName)
+	private String generatePlainText()
 	{
-		PrintWriter outputFile;
-		try
-		{
-			outputFile = new PrintWriter(outputFileName);
-			
-			try
-			{
+		
+		
 				for(int i=0;i<map.get(key.charAt(0)).size();i++)
 				{
 					for(int j=0; j<key.length();j++)
@@ -142,22 +121,10 @@ public class transposition {
 				
 				convertOutputToString();
 				removePadding();
-				outputFile.print(originalText);
-				outputFile.close();
-			}
-			catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+
+				return originalText;
 			
-			
-		}
-		
-		
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	private void removeSpace()
@@ -227,15 +194,15 @@ public class transposition {
 		this.key=key;
 		originalText = FileIO.readFile(inputFileName);
 		putToMapDec();
-		
-		printPlainToFile(outputFileName);
+		FileIO.printCipherToFile(outputFileName, generatePlainText());
+		//printPlainToFile(outputFileName);
 	}
 	
 	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
+		new transposition().encrypt("4312567", "test.txt", "output.txt");
 		new transposition().decryption("4312567", "output.txt", "output1.txt");
 
 	}
