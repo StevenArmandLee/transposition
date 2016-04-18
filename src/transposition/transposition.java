@@ -12,37 +12,6 @@ public class transposition {
 	private String key;
 	private TreeMap <Character,ArrayList<Character>> map = new TreeMap<Character,ArrayList<Character>>();
 	
-	private void readFile(String inputFileName)
-	{
-		FileReader inputFile;
-		try
-		{
-			inputFile = new FileReader(inputFileName);
-			BufferedReader bufferReader;
-			
-			try
-			{
-				bufferReader = new BufferedReader(inputFile);
-				originalText = bufferReader.readLine();
-				inputFile.close();
-			}
-			catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		}
-		
-		
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-	}
-	
 	private void replaceSpace()
 	{
 		StringBuilder tempText = new StringBuilder(originalText);
@@ -120,7 +89,7 @@ public class transposition {
 		return temporary;
 	}
 	
-	private void putToMap()
+	private void putToMapEn()
 	{
 		for(int i=0; i<key.length();i++)
 		{
@@ -133,9 +102,9 @@ public class transposition {
 	public void encrypt(String key, String inputFileName, String outputFileName)
 	{
 		this.key=key;
-		readFile(inputFileName);
+		originalText = FileIO.readFile(inputFileName);
 		addPadding();
-		putToMap();
+		putToMapEn();
 		printCipherToFile(outputFileName);
 	}
 	
@@ -235,7 +204,7 @@ public class transposition {
 		return sortedKey;
 	}
 	
-	private void putToMapp()
+	private void putToMapDec()
 	{
 		
 		String sortedKey = shortKey(key);
@@ -256,8 +225,8 @@ public class transposition {
 	public void decryption(String key, String inputFileName, String outputFileName)
 	{
 		this.key=key;
-		readFile(inputFileName);
-		putToMapp();
+		originalText = FileIO.readFile(inputFileName);
+		putToMapDec();
 		
 		printPlainToFile(outputFileName);
 	}
