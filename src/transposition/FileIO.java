@@ -50,7 +50,6 @@ public class FileIO {
 			try
 			{
 				outputFile.append(dataToprint);
-				
 				outputFile.close();
 			}
 			catch (Exception e) {
@@ -58,10 +57,7 @@ public class FileIO {
 				e.printStackTrace();
 			}
 			
-			
 		}
-		
-		
 		catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

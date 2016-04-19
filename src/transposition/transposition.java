@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.io.*;
+import java.util.Random;
 
 public class transposition {
 	private String originalText;
@@ -24,13 +25,67 @@ public class transposition {
 		}
 		
 		originalText = tempText.toString();
-		//System.out.println(originalText);
+		
+	}
+	
+	private int getRandomCharacter(int mod, int modResult, boolean isSameMod)
+	{
+		
+		
+		Random r = new Random();
+		int randomResult=0;
+		
+		if(!isSameMod)
+		{
+			do
+			{
+				randomResult = (r.nextInt(25) + (int)'a');
+			}
+			while((randomResult%mod) == 0);
+		}
+		
+		else
+		{
+			do
+			{
+				randomResult = (r.nextInt(25) + (int)'a');
+			}
+			while((randomResult%mod) != modResult);
+		}
+		
+		return randomResult;
 	}
 	
 	private void addPadding()
 	{
+		final int MAXROWLENGTH = map.get(key.charAt(0)).size();
+		
+		for(int i=0; i<key.length(); i++)
+		{
+			int totalASCII=0;
+			for(int j=0; j<MAXROWLENGTH-1; j++)
+			{
+				totalASCII += (int)map.get(key.charAt(i)).get(j);
+			}
+			
+			if(map.get(key.charAt(i)).size() != MAXROWLENGTH)
+			{
+				int modResult = totalASCII%MAXROWLENGTH;
+				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH,modResult,false));
+				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH,modResult,true));
+			}
+			else
+			{
+				totalASCII += (int)map.get(key.charAt(i)).get(MAXROWLENGTH-1);
+				int modResult = totalASCII%MAXROWLENGTH;
+				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH,modResult,true));
+			}
+		}
+		
+		
 		
 		replaceSpace();
+		
 		
 	}
 	
@@ -86,10 +141,10 @@ public class transposition {
 	{
 		this.key=key;
 		originalText = FileIO.readFile(inputFileName);
-		addPadding();
 		putToMapEn();
+		addPadding();
 		FileIO.printCipherToFile(outputFileName, generateChiperText());
-		//printCipherToFile(outputFileName);
+		
 	}
 	
 	private void convertOutputToString()
@@ -107,24 +162,18 @@ public class transposition {
 	
 	private String generatePlainText()
 	{
-		
-		
 				for(int i=0;i<map.get(key.charAt(0)).size();i++)
 				{
 					for(int j=0; j<key.length();j++)
 					{
-						outputText.add(map.get(key.charAt(j)).get(i));
-						//outputFile.append(map.get(key.charAt(j)).get(i));
-						
+						if(map.get(key.charAt(j)).size()==map.get(key.charAt(0)).size())
+							outputText.add(map.get(key.charAt(j)).get(i));
 					}
+					
 				}
-				
 				convertOutputToString();
 				removePadding();
-
-
 				return originalText;
-			
 	}
 	
 	private void removeSpace()
@@ -137,7 +186,6 @@ public class transposition {
 				tempText.deleteCharAt(i);
 			}
 		}
-		
 		originalText = tempText.toString();
 	}
 	
@@ -151,15 +199,49 @@ public class transposition {
 				tempText.setCharAt(i, ' ');
 			}
 		}
-		
 		originalText = tempText.toString();
-		//System.out.println(originalText);
 	}
 	
 	private void removePadding()
 	{
+		
 		removeSpace();
 		replacePaddingToSpace();
+	}
+	
+	private void removePadingg()
+	{
+		final int MAXROWLENGTH = (map.get(key.charAt(0)).size())-1;
+		
+		
+		for(int i=0; i<key.length(); i++)
+		{
+			int totalASCII=0;
+			for(int j=0; j<MAXROWLENGTH; j++)
+			{
+				totalASCII += (int)map.get(key.charAt(i)).get(j);
+				
+			}
+			
+			
+			if((totalASCII%MAXROWLENGTH ) == ((int)map.get(key.charAt(i)).get(MAXROWLENGTH) % MAXROWLENGTH))
+			{
+				map.get(key.charAt(i)).set(MAXROWLENGTH, ' ');
+				
+			}
+			
+			else
+			{
+				map.get(key.charAt(i)).set(MAXROWLENGTH, ' ');
+				map.get(key.charAt(i)).set(MAXROWLENGTH-1, ' ');
+				
+			}
+			
+		}
+		
+		
+		
+		replaceSpace();
 	}
 	
 	private String shortKey(String key)
@@ -186,6 +268,7 @@ public class transposition {
 			}
 			map.put(sortedKey.charAt(i), unsortedText);
 		}
+		removePadingg();
 	}
 	
 	
@@ -195,15 +278,14 @@ public class transposition {
 		originalText = FileIO.readFile(inputFileName);
 		putToMapDec();
 		FileIO.printCipherToFile(outputFileName, generatePlainText());
-		//printPlainToFile(outputFileName);
 	}
 	
 	
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		new transposition().encrypt("4312567", "test.txt", "output.txt");
-		new transposition().decryption("4312567", "output.txt", "output1.txt");
+		
+		new transposition().encrypt("erwin", "test.txt", "output.txt");
+		new transposition().decryption("erwin", "output.txt", "output1.txt");
 
 	}
 
