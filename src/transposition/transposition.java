@@ -13,6 +13,32 @@ public class transposition {
 	private String key;
 	private TreeMap <Character,ArrayList<Character>> map = new TreeMap<Character,ArrayList<Character>>();
 	
+	private void isKeyUnique()
+	{
+		if(key.length()>10 || key.length()<1)
+		{
+			System.err.println("your key is too long, please insert key that is below 10 characters and above 0 characters");
+			System.exit(0);
+		}
+		
+		for(int i=0; i<key.length();i++)
+		{
+			int count=0;
+			for(int j=0; j<key.length();j++)
+			{
+				if(key.charAt(i) == key.charAt(j))
+				{
+					count++;
+				}
+			}
+			if(count > 1)
+			{
+				System.err.println("your key is not unique, please try different key which is unique!!");
+				System.exit(0);
+			}
+		}
+	}
+	
 	private void replaceSpace()
 	{
 		StringBuilder tempText = new StringBuilder(originalText);
@@ -35,8 +61,18 @@ public class transposition {
 		Random r = new Random();
 		int randomResult=0;
 		
+		
+		
 		if(!isSameMod)
 		{
+			if(modResult == 0)
+			{
+				do
+				{
+					randomResult = (r.nextInt(25) + (int)'a');
+				}
+				while((randomResult%2) == 1);
+			}
 			do
 			{
 				randomResult = (r.nextInt(25) + (int)'a');
@@ -46,9 +82,18 @@ public class transposition {
 		
 		else
 		{
+			if(modResult == 0)
+			{
+				do
+				{
+					randomResult = (r.nextInt(25) + (int)'a');
+				}
+				while((randomResult%2) == 0);
+			}
 			do
 			{
 				randomResult = (r.nextInt(25) + (int)'a');
+				
 			}
 			while((randomResult%mod) != modResult);
 		}
@@ -70,15 +115,15 @@ public class transposition {
 			
 			if(map.get(key.charAt(i)).size() != MAXROWLENGTH)
 			{
-				int modResult = totalASCII%MAXROWLENGTH;
-				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH,modResult,false));
-				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH,modResult,true));
+				int modResult = totalASCII%(MAXROWLENGTH+1);
+				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH+1,modResult,false));
+				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH+1,modResult,true));
 			}
 			else
 			{
 				totalASCII += (int)map.get(key.charAt(i)).get(MAXROWLENGTH-1);
-				int modResult = totalASCII%MAXROWLENGTH;
-				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH,modResult,true));
+				int modResult = totalASCII%(MAXROWLENGTH+1);
+				map.get(key.charAt(i)).add((char)getRandomCharacter(MAXROWLENGTH+1,modResult,true));
 			}
 		}
 		
@@ -140,6 +185,7 @@ public class transposition {
 	public void encrypt(String key, String inputFileName, String outputFileName)
 	{
 		this.key=key;
+		isKeyUnique();
 		originalText = FileIO.readFile(inputFileName);
 		putToMapEn();
 		addPadding();
@@ -172,7 +218,8 @@ public class transposition {
 					
 				}
 				convertOutputToString();
-				removePadding();
+				removeSpace();
+				replacePaddingToSpace();
 				return originalText;
 	}
 	
@@ -202,14 +249,8 @@ public class transposition {
 		originalText = tempText.toString();
 	}
 	
-	private void removePadding()
-	{
-		
-		removeSpace();
-		replacePaddingToSpace();
-	}
 	
-	private void removePadingg()
+	private void removePadding()
 	{
 		final int MAXROWLENGTH = (map.get(key.charAt(0)).size())-1;
 		
@@ -223,8 +264,7 @@ public class transposition {
 				
 			}
 			
-			
-			if((totalASCII%MAXROWLENGTH ) == ((int)map.get(key.charAt(i)).get(MAXROWLENGTH) % MAXROWLENGTH))
+			if((totalASCII%(MAXROWLENGTH+1) ) == ((int)map.get(key.charAt(i)).get(MAXROWLENGTH) % (MAXROWLENGTH+1)))
 			{
 				map.get(key.charAt(i)).set(MAXROWLENGTH, ' ');
 				
@@ -268,24 +308,40 @@ public class transposition {
 			}
 			map.put(sortedKey.charAt(i), unsortedText);
 		}
-		removePadingg();
+		removePadding();
 	}
 	
 	
 	public void decryption(String key, String inputFileName, String outputFileName)
 	{
 		this.key=key;
+		isKeyUnique();
 		originalText = FileIO.readFile(inputFileName);
 		putToMapDec();
 		FileIO.printCipherToFile(outputFileName, generatePlainText());
+	}
+	
+	public void encryptOrDecrypt(String option,String key, String inputFileName, String outputFileName)
+	{
+		if(option.equals("-e"))
+		{
+			encrypt(key, inputFileName, outputFileName);
+		}
+		else if(option.equals("-d"))
+		{
+			decryption(key, inputFileName, outputFileName);
+		}
+		else
+		{
+			System.err.println("wrogn input");
+		}
 	}
 	
 	
 
 	public static void main(String[] args) {
 		
-		new transposition().encrypt("erwin", "test.txt", "output.txt");
-		new transposition().decryption("erwin", "output.txt", "output1.txt");
+		new transposition().encryptOrDecrypt(args[0], args[1], args[2], args[3]);
 
 	}
 

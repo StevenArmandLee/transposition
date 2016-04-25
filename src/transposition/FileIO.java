@@ -1,5 +1,6 @@
 package transposition;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
@@ -12,8 +13,15 @@ public class FileIO {
 		FileReader inputFile;
 		try
 		{
+			if(!new File(inputFileName).exists())
+			{
+				System.err.println("file does not exist!!");
+				System.exit(1);
+			}
 			inputFile = new FileReader(inputFileName);
 			BufferedReader bufferReader;
+			
+			
 			
 			try
 			{
