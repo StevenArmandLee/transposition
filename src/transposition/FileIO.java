@@ -53,7 +53,6 @@ public class FileIO {
 		try
 		{
 			outputFile = new FileWriter(outputFileName);
-			BufferedReader bufferReader;
 			
 			try
 			{
